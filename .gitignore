@@ -1,3 +1,4 @@
 dark/
 .venv/
 .vscode/
+*.db
