@@ -2,6 +2,9 @@ import google.generativeai as genai
 import os
 from fastapi import FastAPI
 import uvicorn
+import asyncio
+from prisma import Prisma
+from prisma.models import User,passwars,Question,Answer,Session
 
 
 
@@ -10,6 +13,7 @@ import uvicorn
 
 
 
+db = Prisma(auto_register=True)
 
 app = FastAPI()
 
@@ -27,6 +31,38 @@ chat = model.start_chat()
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+
+
+@app.get("/createuser")
+async def create_user(username: str, email: str, password: str):
+    await db.connect()
+
+    user = await User.prisma().create(
+        data={
+            'username': username,
+            'email': email
+        },
+    )
+    await db.passwars.create(
+        data={
+            'word': password,
+            'user': {
+                'connect': {
+                    'id': user.id
+                }
+            }
+        },
+    )
+
+    await db.disconnect()
+
+    return {"response": "User Created"}
+
+
+
+
 
 
 
@@ -52,8 +88,23 @@ async def generate(department: str, no: int,dificulty : int):
 
 
 @app.get("/setQuestion")
-async def QuesSet():
-    return {"response": response.text}
+async def QuesSet(session: str, question: str, answer: str):
+    ses = await db.Session.find_unique(where={"session": session})
+    if ses is None:
+        return {"response": "Session not found"}
+    User = await db.User.find_unique(where={"id": ses.user.id})
+    Question = await db.Question.create(
+        data={
+            'question': question,
+            'answer': answer,
+            'user': {
+                'connect': {
+                    'id': User.id
+                }
+            }
+        },
+    )
+    # return {"response": response.text}
 
 
 
