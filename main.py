@@ -62,5 +62,15 @@ async def generate(prompt: str):
     response = chat.send_message(prompt)
     return {"response": response.text}
 
+@app.get("/questiongenerate/{prompt}")
+async def generate(prompt: str):
+    response = model.generate_question(prompt)
+    return {"response": response.text}
+
+@app.get("/setQuestion/{prompt}")
+async def generate(prompt: str):
+    response = model.set_question(prompt)
+    return {"response": response.text}
+
 if __name__ == "__main__":
     uvicorn.run(app)

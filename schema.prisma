@@ -43,5 +43,10 @@ model User {
 model Organization {
   id   Int    @id @default(autoincrement())
   name String
-  User User[]
+}
+
+model answer {
+  id   Int    @id @default(autoincrement())
+  user User
+  na
 }
