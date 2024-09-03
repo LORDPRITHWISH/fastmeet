@@ -11,30 +11,6 @@ import uvicorn
 
 
 
-
-
-
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-
-
-
-
-
-
-
-
 app = FastAPI()
 
 genai.configure(api_key=os.environ["API_KEY"])
@@ -62,12 +38,12 @@ async def generate(prompt: str):
     response = chat.send_message(prompt)
     return {"response": response.text}
 
-@app.get("/questiongenerate/{prompt}")
-async def generate(prompt: str):
+@app.get("/questiongenerate/")
+async def generate(department: str, no: int,dificulty : int):
     response = model.generate_question(prompt)
     return {"response": response.text}
 
-@app.get("/setQuestion/{prompt}")
+@app.get("/setQuestion")
 async def generate(prompt: str):
     response = model.set_question(prompt)
     return {"response": response.text}
