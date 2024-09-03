@@ -1,7 +1,7 @@
 // database
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://question_bank_owner:EpcZert50MHx@ep-dry-recipe-a5kiagog-pooler.us-east-2.aws.neon.tech/question_bank?sslmode=require"
+  url      = "postgresql://Interview_owner:APbWT87NYOXI@ep-wandering-bar-a5q672ov-pooler.us-east-2.aws.neon.tech/Interview?sslmode=require"
 }
 
 // generator
@@ -10,43 +10,70 @@ generator client {
   recursive_type_depth = 5
 }
 
-// data models
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  views     Int     @default(0)
-  published Boolean @default(false)
-  author    User?   @relation(fields: [author_id], references: [id])
-  author_id Int?
-}
+// Models
 
-model question_bank {
-  id       Int    @id @default(autoincrement())
-  question String
-  answer   String
-  author   User   @relation(fields: [userId], references: [id])
-  group    String
-  userId   Int
+model Organization {
+  id        Int         @id @default(autoincrement())
+  name      String
+  User      User[]
+  Interview Interview[]
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  email          String          @unique
+  id             Int           @id @default(autoincrement())
+  email          String        @unique
+  username       String        @unique
   name           String?
-  organization   Organization?   @relation(fields: [organizationId], references: [id])
-  Post           Post[]
-  question_bank  question_bank[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
   organizationId Int?
+  Question       Question[]
+  InterList      InterList[]
+  Answer         Answer[]
+  Sesson         Sesson[]
 }
 
-model Organization {
-  id   Int    @id @default(autoincrement())
-  name String
+model Interview {
+  id             Int           @id @default(autoincrement())
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId Int?
+  Question       Question[]
+  InterList      InterList[]
 }
 
-model answer {
-  id   Int    @id @default(autoincrement())
-  user User
-  na
+model Question {
+  id       Int       @id @default(autoincrement())
+  question String
+  answer   String
+  author   User      @relation(fields: [userId], references: [id])
+  userId   Int
+  group    Interview @relation(fields: [groupId], references: [id])
+  groupId  Int
+  Answer   Answer[]
+}
+
+model InterList {
+  id      Int       @id @default(autoincrement())
+  user    User?     @relation(fields: [userId], references: [id])
+  userId  Int?
+  group   Interview @relation(fields: [groupId], references: [id])
+  groupId Int
+  Answer  Answer[]
+}
+
+model Answer {
+  id         Int       @id @default(autoincrement())
+  ans        String?
+  under      InterList @relation(fields: [underId], references: [id])
+  underId    Int
+  question   Question  @relation(fields: [questionId], references: [id])
+  questionId Int
+  user       User?     @relation(fields: [userId], references: [id])
+  userId     Int?
+}
+
+model Sesson {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
 }

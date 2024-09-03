@@ -28,25 +28,34 @@ chat = model.start_chat()
 async def root():
     return {"message": "Hello World"}
 
+
+
 @app.get("/modgenerate/{prompt}")
 async def generate(prompt: str):
     response = model.generate_content(prompt)
     return {"response": response.text}
+
+
 
 @app.get("/chatgenerate/{prompt}")
 async def generate(prompt: str):
     response = chat.send_message(prompt)
     return {"response": response.text}
 
+
+
 @app.get("/questiongenerate/")
 async def generate(department: str, no: int,dificulty : int):
     response = model.generate_question(prompt)
     return {"response": response.text}
 
+
+
 @app.get("/setQuestion")
-async def generate(prompt: str):
-    response = model.set_question(prompt)
+async def QuesSet():
     return {"response": response.text}
+
+
 
 if __name__ == "__main__":
     uvicorn.run(app)
